@@ -1,5 +1,3 @@
-import React from "react";
-import "./Home.css";
 import Displayitems from "../../components/DisplayItems/Displayitems";
 
 const Home = () => {
