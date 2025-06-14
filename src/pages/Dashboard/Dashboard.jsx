@@ -193,13 +193,13 @@ const Dashboard = () => {
 
       <div className="dasboard-card-section">
         <DashboardCard
-          Icon={<Package />}
+          Icon={<DollarSign />}
           title={"Total Inventory Value"}
           value={`$${dashboardStats.totalInventoryValue}`}
           key={"inv-val-dashboard-card"}
         />
         <DashboardCard
-          Icon={<DollarSign />}
+          Icon={<Package />}
           title={"Total Products"}
           value={dashboardStats.tottalProducts}
           key={"prod-count-dashboard-card"}
