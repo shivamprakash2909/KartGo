@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,31 +8,39 @@ const ProtectedRoute = ({ children, authentication = true, role = "user" }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { userData } = useSelector((state) => state.user);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    // Check if user should be authenticated
-    if (authentication) {
-      if (!userData || !userData?.isAuthenticated) {
-        toast.error("Please Login to continue!");
-        navigate("/login");
-      }
+    setIsChecking(true);
 
-      //   if loggedIn user should be admin only
-      if (role === "admin" && (!userData?.role || userData?.role !== "admin")) {
-        toast.error("You cannot acces this resource!");
-        navigate("/");
-      }
+    // Immediate check for authentication requirements
+    if (authentication && (!userData || !userData.isAuthenticated)) {
+      toast.error("Please login to continue!", { id: "not-logged-in" });
+      navigate("/login", { replace: true });
+      return;
     }
 
-    // Check if user should not be authenticated
-    else if (!authentication && userData && userData?.isAuthenticated) {
-      if (authPaths.includes(location.pathname)) {
-        navigate("/");
-      }
+    // Admin role check
+    if (authentication && role === "admin" && userData?.role !== "admin") {
+      toast.error("You cannot access this resource!", { id: "access-denied" });
+      navigate("/", { replace: true });
+      return;
     }
-  }, [userData, navigate, authentication]);
 
-  return <>{children}</>;
+    // Check for already authenticated users trying to access auth paths
+    if (!authentication && userData?.isAuthenticated && authPaths.includes(location.pathname)) {
+      navigate("/", { replace: true });
+      return;
+    }
+
+    setIsChecking(false);
+  }, [userData, navigate, authentication, role, location.pathname]);
+
+  if (isChecking) {
+    return null; // or a loading spinner
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

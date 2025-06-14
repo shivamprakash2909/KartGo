@@ -9,7 +9,7 @@ function App() {
   const dispatch = useDispatch();
   const getUserOnMount = async () => {
     try {
-      const res = await fetch("https://dummyjson.com/user/me", {
+      const res = await fetch("https://dummyjson.com/auth/me", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("kartgo-accessToken")}`,
@@ -74,7 +74,7 @@ function App() {
       <div className="bottom-container">
         {/* <Breadcrumbs /> */}
 
-        <div className="page-container-wrapper">
+        <div id="page-container-wrapper">
           <Outlet />
         </div>
       </div>

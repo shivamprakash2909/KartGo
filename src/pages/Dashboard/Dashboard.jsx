@@ -1,18 +1,62 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllDashboardProducts, setDashboadStats, setCategoryWiseStats } from "../../features/dashboardSlice";
-import DashboardCard from "../../components/Dashboard/DashboardCard";
+import {
+  setAllDashboardProducts,
+  setDashboadStats,
+  setCategoryWiseStats,
+  addProduct,
+} from "../../features/dashboardSlice";
+import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import { DollarSign, Package } from "lucide-react";
 import "./Dashboard.css";
 import { Bar, BarChart, Legend, Pie, PieChart, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { PureComponent } from "react";
 import AdminItemCard from "../../components/AdminItemCard/AdminItemCard";
+import AddProductModal from "./AddProductModal";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const { dashboardStats, allProducts, dashboardItemsPerCategory } = useSelector((state) => state.dashboard);
   const [monthlyInventoryValue, setMonthlyInventoryValue] = useState([]);
   const [displayAdminItems, setDisplayAdminItems] = useState(false);
+  const [openAddProductModal, setOpenAddProdModal] = useState(false);
+  const [isAddingProduct, setIsAddingProduct] = useState(false);
+
+  const addProductHandler = async (addedProductData) => {
+    let newProduct = null;
+    try {
+      setIsAddingProduct(true);
+      const res = await fetch("https://dummyjson.com/products/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: addedProductData.id,
+          title: addedProductData.title,
+          price: addedProductData.price,
+          description: addedProductData.description,
+          category: addedProductData.category,
+          stock: addedProductData.stock,
+          images: addedProductData.images,
+        }),
+      });
+      const resData = await res.json();
+      if (resData) {
+        newProduct = {
+          id: resData.id,
+          title: resData.title,
+          price: resData.price,
+          description: resData.description,
+          category: resData.category,
+          stock: resData.stock,
+          images: resData.images,
+        };
+      }
+    } catch (error) {
+      console.error("Error in adding Product, error: ", error);
+    } finally {
+      setIsAddingProduct(false);
+      setOpenAddProdModal(false);
+    }
+  };
   const generateDashboardStats = async () => {
     const allProducts = await fetch("https://dummyjson.com/products?limit=0");
     const allProductsData = await allProducts.json();
@@ -126,10 +170,26 @@ const Dashboard = () => {
 
   return (
     <div className="page-container dashboard">
-      <div>
-        <h1>Dashboard</h1>
-        <h3>Welcome to your e-commerce admin dashboard</h3>
+      <div className="Dashboard-addButton-heading">
+        <div>
+          <h1>Dashboard</h1>
+          <h3>Welcome to your e-commerce admin dashboard</h3>
+        </div>
+        <div>
+          <button onClick={() => setOpenAddProdModal(true)}>Add Product</button>
+        </div>
       </div>
+
+      <AddProductModal
+        isOpen={openAddProductModal}
+        onClose={() => setOpenAddProdModal(false)}
+        onSave={addProductHandler}
+        cancelBtnText="Cancel"
+        saveBtnText="Add"
+        title="Add Product"
+        cancelBtnDisabled={isAddingProduct}
+        confirmBtnDisabled={isAddingProduct}
+      />
 
       <div className="dasboard-card-section">
         <DashboardCard
@@ -200,9 +260,19 @@ const Dashboard = () => {
         {/* <div>y</div> */}
       </div>
       <div className="dashboard-item-list">
-        <button onClick={() => setDisplayAdminItems((prev) => !prev)}>
-          {displayAdminItems ? "Hide Products" : "Show Products"}
-        </button>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "6px",
+            marginBottom: "16px",
+          }}
+        >
+          <button onClick={() => setDisplayAdminItems((prev) => !prev)}>
+            {displayAdminItems ? "Hide Products" : "Show Products"}
+          </button>
+        </div>
 
         {displayAdminItems &&
           allProducts.products.map((product) => <AdminItemCard key={product.id} productData={product} />)}

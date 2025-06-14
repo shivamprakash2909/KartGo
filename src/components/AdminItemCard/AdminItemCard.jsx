@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./AdminItemCard.css";
 import { useDispatch, useSelector } from "react-redux";
 
-import { deleteProduct } from "../../features/productSlice"; // Add updateProduct if needed
 import ConfirmationModal from "../Modal/ConfirmationModal";
 import { updateDashboardProductList } from "../../features/dashboardSlice";
 import EditProductModal from "./EditProductModal";
@@ -15,7 +14,7 @@ const AdminItemCard = ({ productData }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [openEditModal, setOpenEditMopdal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const { allProducts } = useSelector((state) => state.dashboard);
 
@@ -78,7 +77,7 @@ const AdminItemCard = ({ productData }) => {
       console.error("Failed to update product, err: ", error);
     } finally {
       setIsUpdating(false);
-      setOpenEditMopdal(false);
+      setOpenEditModal(false);
     }
   };
 
@@ -115,7 +114,7 @@ const AdminItemCard = ({ productData }) => {
         </div>
 
         <div className="card-actions">
-          <button onClick={() => setOpenEditMopdal(true)} className="action-btn edit-btn">
+          <button onClick={() => setOpenEditModal(true)} className="action-btn edit-btn">
             Edit Product
           </button>
           <button onClick={() => setOpenDeleteModal(true)} className="action-btn delete-btn">
@@ -126,7 +125,7 @@ const AdminItemCard = ({ productData }) => {
 
       <EditProductModal
         isOpen={openEditModal}
-        onClose={() => setOpenEditMopdal(false)}
+        onClose={() => setOpenEditModal(false)}
         onSave={updateHandler}
         product={productData}
         cancelBtnText="Cancel"

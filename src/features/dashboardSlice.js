@@ -35,10 +35,18 @@ const dashboardSlice = createSlice({
     updateDashboardProductList: (state, actions) => {
       state.allProducts.products = actions.payload;
     },
+    addProduct: (state, action) => {
+      state.allProducts.products.push(action.payload);
+    },
   },
 });
 
 const dashboardReducer = dashboardSlice.reducer;
-export const { setAllDashboardProducts, setDashboadStats, setCategoryWiseStats, updateDashboardProductList } =
-  dashboardSlice.actions;
+export const {
+  setAllDashboardProducts,
+  setDashboadStats,
+  setCategoryWiseStats,
+  updateDashboardProductList,
+  addProduct,
+} = dashboardSlice.actions;
 export default dashboardReducer;

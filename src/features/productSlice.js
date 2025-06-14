@@ -20,13 +20,8 @@ const productSLice = createSlice({
     addAllProducts: (state, actions) => {
       state.productData = actions.payload;
     },
-    addProduct: (state, actions) => {
-      state.productData = { ...actions.payload, id: nanoid() };
-    },
-    updateProduct: (state, actions) => {},
-    deleteProduct: () => {},
   },
 });
 const productReducer = productSLice.reducer;
-export const { setProductLoader, addAllProducts, addProduct, updateProduct, deleteProduct } = productSLice.actions;
+export const { setProductLoader, addAllProducts } = productSLice.actions;
 export default productReducer;
